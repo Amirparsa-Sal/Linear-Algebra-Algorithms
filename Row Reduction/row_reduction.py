@@ -9,6 +9,8 @@ class RowReductionHandler():
 		self.cols_num = aug_matrix.shape[1]
 
 	def interchange_row(self,row1,row2):
+		if row1 == row2:
+			return
 		for i in range(self.cols_num):
 			self.aug_matrix[row1,i],self.aug_matrix[row2,i] = self.aug_matrix[row2,i],self.aug_matrix[row1,i]
 
@@ -20,7 +22,44 @@ class RowReductionHandler():
 			return
 		self.aug_matrix[row1] -= self.aug_matrix[row1,col]/self.aug_matrix[row2,col] * self.aug_matrix[row2]
 
-#Getting input
+	def is_zero(self, arr):
+		for num in arr:
+			if num != 0:
+				return False
+		return True
+
+	def find_pivot_column(self, starting_row=0, starting_col=0):
+		for i in range(starting_col,self.cols_num):
+			if not self.is_zero(self.aug_matrix[starting_row:,i]):
+				return i
+		return -1
+
+	def find_absolute_max_in_column(self, col,starting_row=0):
+		max_num = self.aug_matrix[:,col][starting_row]
+		index = starting_row
+		for i in range(starting_row,self.rows_num):
+			number = self.aug_matrix[:,col][i]
+			if abs(number)>abs(max_num):
+				max_num = number
+				index = i
+		return index
+	
+	def do_forward_phase(self, starting_row=0, starting_col=0):
+		print(self.aug_matrix)
+		pivot_col = self.find_pivot_column(starting_row,starting_col)
+		self.pivot_positions.append((starting_row,pivot_col))
+		if starting_row == self.rows_num-1 or pivot_col == self.cols_num-1:
+			return
+		max_index = self.find_absolute_max_in_column(pivot_col,starting_row)
+		self.interchange_row(starting_row,max_index)
+		print(self.aug_matrix)
+		for i in range(starting_row+1,self.rows_num):
+			self.replacement_row(i,starting_row,pivot_col)
+			print(self.aug_matrix)
+		self.do_forward_phase(starting_row+1,starting_col+1)
+
+
+Getting input
 rows,cols = list(map(int, input("Please enter number of rows and columns respectively:\n> ").split(" ")))
 aug_matrix = np.zeros((rows,cols))
 for i in range(rows):
@@ -30,14 +69,6 @@ for i in range(rows):
 
 constants = list(map(int, input("Please enter constant values:\n> ").split(" ")))
 aug_matrix=np.hstack((aug_matrix, np.array(constants).reshape(-1,1)))
-
-#Start row reduction
-
 handler = RowReductionHandler(aug_matrix)
-print(handler.aug_matrix)
-handler.interchange_row(0,1)
-print(handler.aug_matrix)
-handler.scale_row(0,2)
-print(handler.aug_matrix)
-handler.replacement_row(1,0,0)
+handler.do_forward_phase()
 print(handler.aug_matrix)
