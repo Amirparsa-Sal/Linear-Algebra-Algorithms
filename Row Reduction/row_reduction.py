@@ -1,4 +1,5 @@
 import numpy as np 
+import math
 
 class RowReductionHandler():
 
@@ -8,6 +9,14 @@ class RowReductionHandler():
 		self.rows_num = aug_matrix.shape[0]
 		self.cols_num = aug_matrix.shape[1]
 
+	def floating_point_checker(self,row):
+                for i in range(self.cols_num):
+                        number = self.aug_matrix[row,i]
+                        if abs(math.ceil(number) - number) < 0.0000000001:
+                                self.aug_matrix[row,i] = math.ceil(number)
+                        elif abs(math.floor(number) - number) < 0.0000000001:
+                                self.aug_matrix[row,i] = math.floor(number)
+
 	def interchange_row(self,row1,row2):
 		if row1 == row2:
 			return
@@ -16,12 +25,14 @@ class RowReductionHandler():
 
 	def scale_row(self,row,scale):
 		self.aug_matrix[row]*=scale
-
+		self.floating_point_checker(row)
+		
 	def replacement_row(self,row1,row2,col=0):
 		if self.aug_matrix[row2,col] == 0:
 			return
 		self.aug_matrix[row1] -= self.aug_matrix[row1,col]/self.aug_matrix[row2,col] * self.aug_matrix[row2]
-
+		self.floating_point_checker(row1)
+		
 	def is_zero(self, arr):
 		for num in arr:
 			if num != 0:
@@ -83,15 +94,16 @@ class RowReductionHandler():
 		else:
 			for i in range(self.cols_num-1):
 				if i<self.rows_num and self.aug_matrix[i,i]==1:
-					asnwer=""
 					other_cols = [j for j in range(self.cols_num-1) if j!=i]
 					print(f"X{i+1} = {self.aug_matrix[i,-1]}",end="")
+					answer = ""
 					for j in other_cols:
 						cof = self.aug_matrix[i,j]
 						if cof>0:
-							asnwer += f" - {cof}X{j+1}"
+							answer += f" - {cof}X{j+1}"
 						elif cof<0:
-							asnwer += f" + {abs(cof)}X{j+1}"
+							answer += f" + {abs(cof)}X{j+1}"
+					print(answer)
 				else:
 					print(f"X{i+1} is a free variable")
 
