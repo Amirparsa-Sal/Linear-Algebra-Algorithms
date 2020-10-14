@@ -88,24 +88,27 @@ class RowReductionHandler():
 				return False
 		return True
 
+
 	def show_result(self):
 		if not self.has_answer():
 			print("The system has no answer!")
 		else:
 			for i in range(self.cols_num-1):
-				if i<self.rows_num and self.aug_matrix[i,i]==1:
-					other_cols = [j for j in range(self.cols_num-1) if j!=i]
-					print(f"X{i+1} = {self.aug_matrix[i,-1]}",end="")
-					answer = ""
-					for j in other_cols:
-						cof = self.aug_matrix[i,j]
-						if cof>0:
-							answer += f" - {cof}X{j+1}"
-						elif cof<0:
-							answer += f" + {abs(cof)}X{j+1}"
-					print(answer)
-				else:
-					print(f"X{i+1} is a free variable")
+                                pivot = [t[0] for t in self.pivot_positions if t[1]==i]
+                                if len(pivot)==1:
+                                        row = pivot[0]
+                                        other_cols = [j for j in range(self.cols_num-1) if j!=i]
+                                        print(f"X{i+1} = {self.aug_matrix[row,-1]}",end="")
+                                        answer = ""
+                                        for j in other_cols:
+                                                cof = self.aug_matrix[row,j]
+                                                if cof>0:
+                                                        answer += f" - {cof}X{j+1}"
+                                                elif cof<0:
+                                                        answer += f" + {abs(cof)}X{j+1}"
+                                        print(answer)
+                                else:
+                                        print(f"X{i+1} is a free variable")
 
 # Getting input
 rows,cols = list(map(int, input("Please enter number of rows and columns respectively:\n> ").split(" ")))
