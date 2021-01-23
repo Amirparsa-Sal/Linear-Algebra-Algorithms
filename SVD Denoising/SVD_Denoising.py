@@ -5,7 +5,7 @@ import numpy as np
 	because of similarity between red,green and blue diagrams, I assume a particular K for all 3 color channels that is k = 13
 '''
 def plot_singular_values(S):
-	x = [i for i in range(142)]
+	x = [i for i in range(S.shape[0])]
 	y = [value for value in S]
 	plt.figure()
 	plt.plot(x,y,'b')
@@ -48,4 +48,4 @@ for i in range(width):
 		new_img[i,j,1] = new_green[i,j]
 		new_img[i,j,2] = new_blue[i,j]
 
-plt.imsave(f'saved{k}.jpg',new_img)
+plt.imsave(f'saved{k}.jpeg',new_img)
